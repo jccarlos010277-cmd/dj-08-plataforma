@@ -1,0 +1,47 @@
+{
+  "normativas": {
+    "ley_sistema_tributario": {
+      "articulo_75": "Tratamiento de otros ingresos como donaciones",
+      "articulo_76": "Cancelación de reservas de capital",
+      "actualizado": "2024-01-01"
+    },
+    "resoluciones": {
+      "no_350": {
+        "descripcion": "Establece tipo impositivo general del 35%",
+        "excepciones_tcp": "Algunas actividades TCP pueden tener tipos diferentes según Anexo 1",
+        "actualizado": "2024-01-01"
+      }
+    },
+    "tasas_depreciacion": {
+      "inmuebles": 2,
+      "maquinaria": 10,
+      "equipos": 20,
+      "vehiculos": 20,
+      "muebles": 10,
+      "actualizado": "2024-01-01"
+    },
+    "deducciones_especiales": {
+      "reserva_contingencias": {
+        "porcentaje_base": 10,
+        "limite_maximo": "30% de los ingresos netos",
+        "partidas_incluidas": [
+          "Provisiones para riesgos y gastos futuros",
+          "Estimaciones para litigios en curso",
+          "Previsiones para fluctuaciones del mercado"
+        ]
+      },
+      "ingresos_no_imponibles": [
+        "Rentas exentas por disposición especial",
+        "Indemnizaciones por seguros",
+        "Herencias y donaciones (en condiciones específicas)",
+        "Subsidios estatales",
+        "Ingresos por exportación (regímenes especiales)"
+      ]
+    },
+    "advertencias_tcp": {
+      "pagos_a_cuenta": "DEFINITIVOS - SIN DEVOLUCIÓN",
+      "excedentes": "No son reembolsables por la ONAT",
+      "recomendacion": "Calcular cuidadosamente los anticipos trimestrales"
+    }
+  }
+}
