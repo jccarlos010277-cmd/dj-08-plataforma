@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJ-08 Automatizada - Declaración Jurada Inteligente</title>
+    <title>DJ-08 Automatizada - Plataforma de Declaración Jurada</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Banner de Advertencia TCP -->
     <div class="tcp-warning" id="tcpWarning">
         <div class="warning-content">
             <i class="fas fa-exclamation-triangle"></i>
-            <span><strong>🚨 ATENCIÓN TCP:</strong> Los pagos a cuenta son DEFINITIVOS. La ONAT NO realiza devoluciones de excedentes pagados en anticipos.</span>
+            <span><strong>ADVERTENCIA PARA TCP:</strong> Los pagos a cuenta son definitivos. La ONAT no realiza devoluciones de excedentes pagados en anticipos.</span>
             <button class="close-warning" onclick="closeWarning()">&times;</button>
         </div>
     </div>
@@ -25,11 +25,9 @@
                 <div class="logo-section">
                     <div class="logo">
                         <i class="fas fa-file-invoice-dollar"></i>
-                        <div>
-                            <h1>DJ-08<span class="logo-sub">Automatizada</span></h1>
-                            <p class="tagline">Declaración Jurada Inteligente con Asesoramiento en Tiempo Real</p>
-                        </div>
+                        <h1>DJ-08<span class="logo-sub">Automatizada</span></h1>
                     </div>
+                    <p class="tagline">Plataforma web para automatizar la Declaración Jurada</p>
                 </div>
                 
                 <div class="user-controls">
@@ -38,7 +36,7 @@
                             <input type="checkbox" id="tcpToggle">
                             <span class="slider"></span>
                         </label>
-                        <span class="tcp-label"><i class="fas fa-user-tie"></i> Modo TCP</span>
+                        <span class="tcp-label">Modo TCP</span>
                     </div>
                     
                     <button class="btn-help" onclick="showHelp()">
@@ -54,16 +52,16 @@
         <div class="container">
             <ul class="nav-tabs">
                 <li class="nav-item active" data-section="seccion-a">
-                    <i class="fas fa-chart-line"></i> <span>Sección A<br><small>Ingresos</small></span>
+                    <i class="fas fa-chart-line"></i> Sección A: Ingresos
                 </li>
                 <li class="nav-item" data-section="seccion-b">
-                    <i class="fas fa-calculator"></i> <span>Sección B<br><small>Gastos</small></span>
+                    <i class="fas fa-calculator"></i> Sección B: Gastos
                 </li>
                 <li class="nav-item" data-section="seccion-c">
-                    <i class="fas fa-adjust"></i> <span>Sección D<br><small>Ajustes</small></span>
+                    <i class="fas fa-adjust"></i> Sección D: Ajustes
                 </li>
                 <li class="nav-item" data-section="seccion-d">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>Sección C<br><small>Liquidación</small></span>
+                    <i class="fas fa-file-invoice-dollar"></i> Sección C: Liquidación
                 </li>
             </ul>
         </div>
@@ -72,10 +70,7 @@
     <main class="container">
         <!-- Sección A: Ingresos -->
         <section id="seccion-a" class="form-section active">
-            <div class="section-header">
-                <h2><i class="fas fa-chart-line"></i> Sección A: Captura de Ingresos</h2>
-                <p class="section-guide">Complete sus datos de ventas y servicios. Cada campo incluye asesoramiento específico.</p>
-            </div>
+            <h2><i class="fas fa-chart-line"></i> Sección A: Captura de Ingresos</h2>
             
             <div class="form-grid">
                 <!-- Ventas Brutas -->
@@ -83,67 +78,40 @@
                     <h3><i class="fas fa-shopping-cart"></i> Ventas y Servicios</h3>
                     
                     <div class="form-group">
-                        <label for="ventasBrutasTotales">
-                            <i class="fas fa-dollar-sign"></i> Ventas Brutas Totales (Año completo):
-                            <span class="label-help" onclick="mostrarAsesoramiento('ventasBrutasTotales')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="ventasBrutasTotales">Ventas Brutas Totales (Año completo):</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-chart-bar"></i>
+                            <i class="fas fa-dollar-sign"></i>
                             <input type="number" id="ventasBrutasTotales" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionA()"
-                                   onfocus="mostrarAsesoramiento('ventasBrutasTotales')">
+                                   placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">💰 Acumulado informativo de todo el año</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="ventasPeriodo">
-                            <i class="fas fa-calendar-alt"></i> Ventas del Período Impositivo:
-                            <span class="label-help" onclick="mostrarAsesoramiento('ventasPeriodo')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="ventasPeriodo">Ventas del Período Impositivo:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-calendar-alt"></i>
                             <input type="number" id="ventasPeriodo" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionA()"
-                                   onfocus="mostrarAsesoramiento('ventasPeriodo')">
+                                   placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">📅 Solo meses donde corresponde pagar impuestos</small>
+                        <small class="form-text">Solo meses donde corresponde pagar impuestos</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="devolucionesVentas">
-                            <i class="fas fa-undo-alt"></i> Devoluciones en Ventas:
-                            <span class="label-help" onclick="mostrarAsesoramiento('devolucionesVentas')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="devolucionesVentas">Devoluciones en Ventas:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-exchange-alt"></i>
+                            <i class="fas fa-undo-alt"></i>
                             <input type="number" id="devolucionesVentas" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionA()"
-                                   onfocus="mostrarAsesoramiento('devolucionesVentas')">
+                                   placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">🔄 Monto de productos devueltos por clientes</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="impuestoVentas">
-                            <i class="fas fa-percentage"></i> Impuesto sobre Ventas:
-                            <span class="label-help" onclick="mostrarAsesoramiento('impuestoVentas')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="impuestoVentas">Impuesto sobre Ventas:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-file-invoice"></i>
+                            <i class="fas fa-percentage"></i>
                             <input type="number" id="impuestoVentas" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionA()"
-                                   onfocus="mostrarAsesoramiento('impuestoVentas')">
+                                   placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">🏛️ Impuesto recaudado que debe declarar</small>
                     </div>
                 </div>
                 
@@ -152,48 +120,31 @@
                     <h3><i class="fas fa-money-bill-wave"></i> Otros Ingresos</h3>
                     
                     <div class="form-group">
-                        <label for="ventaActivos">
-                            <i class="fas fa-industry"></i> Venta de Activos:
-                            <span class="label-help" onclick="mostrarAsesoramiento('ventaActivos')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="ventaActivos">Venta de Activos:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-truck-loading"></i>
+                            <i class="fas fa-industry"></i>
                             <input type="number" id="ventaActivos" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">🏭 Venta de maquinaria, equipos o propiedades</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="donaciones">
-                            <i class="fas fa-hand-holding-heart"></i> Donaciones Recibidas:
-                            <span class="label-help" onclick="mostrarAsesoramiento('donaciones')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="donaciones">Donaciones Recibidas:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-gift"></i>
+                            <i class="fas fa-hand-holding-heart"></i>
                             <input type="number" id="donaciones" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">📜 Art. 75 Ley Sistema Tributario</small>
+                        <small class="form-text">Art. 75 Ley Sistema Tributario</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="otrosIngresos">
-                            <i class="fas fa-plus-circle"></i> Otros Ingresos No Operativos:
-                            <span class="label-help" onclick="mostrarAsesoramiento('otrosIngresos')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="otrosIngresos">Otros Ingresos No Operativos:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-coins"></i>
+                            <i class="fas fa-plus-circle"></i>
                             <input type="number" id="otrosIngresos" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionA()">
                         </div>
-                        <small class="form-text">💼 Intereses, alquileres, servicios técnicos</small>
                     </div>
                 </div>
                 
@@ -201,46 +152,36 @@
                 <div class="form-card results-card">
                     <h3><i class="fas fa-calculator"></i> Resultados Sección A</h3>
                     
-                    <div class="calculation-steps">
-                        <div class="result-item">
-                            <span>Ingresos Brutos Totales:</span>
-                            <span id="ingresosBrutos" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Devoluciones:</span>
-                            <span id="totalDevoluciones" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Impuesto Ventas:</span>
-                            <span id="totalImpuestoVentas" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <hr class="result-divider">
-                        
-                        <div class="result-item total">
-                            <span><strong>INGRESOS NETOS:</strong></span>
-                            <span id="ingresosNetos" class="result-value total-value">$0.00</span>
-                        </div>
+                    <div class="result-item">
+                        <span>Ingresos Brutos Totales:</span>
+                        <span id="ingresosBrutos" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Devoluciones:</span>
+                        <span id="totalDevoluciones" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Impuesto Ventas:</span>
+                        <span id="totalImpuestoVentas" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <hr class="result-divider">
+                    
+                    <div class="result-item total">
+                        <span><strong>INGRESOS NETOS:</strong></span>
+                        <span id="ingresosNetos" class="result-value total-value">$0.00</span>
                     </div>
                     
                     <div class="result-note">
                         <i class="fas fa-info-circle"></i>
-                        <div>
-                            <strong>📋 Listo para continuar:</strong> Este valor se transfiere automáticamente a la Sección B
-                        </div>
+                        <span>Este valor se transfiere a la Sección B</span>
                     </div>
                 </div>
             </div>
             
             <div class="section-navigation">
-                <div class="progress-info">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 25%"></div>
-                    </div>
-                    <span>Paso 1 de 4</span>
-                </div>
                 <button class="btn-next" onclick="showSection('seccion-b')">
                     Continuar a Sección B <i class="fas fa-arrow-right"></i>
                 </button>
@@ -249,10 +190,7 @@
 
         <!-- Sección B: Gastos y Utilidad -->
         <section id="seccion-b" class="form-section">
-            <div class="section-header">
-                <h2><i class="fas fa-calculator"></i> Sección B: Gastos y Utilidad del Período</h2>
-                <p class="section-guide">Registre sus gastos deducibles según sus libros de contabilidad.</p>
-            </div>
+            <h2><i class="fas fa-calculator"></i> Sección B: Gastos y Utilidad del Período</h2>
             
             <div class="form-grid">
                 <!-- Costos y Gastos -->
@@ -260,81 +198,49 @@
                     <h3><i class="fas fa-file-invoice"></i> Costos y Gastos Deducibles</h3>
                     
                     <div class="form-group">
-                        <label for="costoVentas">
-                            <i class="fas fa-boxes"></i> Costo de Ventas:
-                            <span class="label-help" onclick="mostrarAsesoramiento('costoVentas')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="costoVentas">Costo de Ventas:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-box-open"></i>
+                            <i class="fas fa-boxes"></i>
                             <input type="number" id="costoVentas" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionB()"
-                                   onfocus="mostrarAsesoramiento('costoVentas')">
+                                   placeholder="0.00" oninput="calcularSeccionB()">
                         </div>
-                        <small class="form-text">📦 Materias primas, productos para venta</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="gastosAdministracion">
-                            <i class="fas fa-user-tie"></i> Gastos de Administración:
-                            <span class="label-help" onclick="mostrarAsesoramiento('gastosAdministracion')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="gastosAdministracion">Gastos de Administración:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-briefcase"></i>
+                            <i class="fas fa-user-tie"></i>
                             <input type="number" id="gastosAdministracion" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionB()"
-                                   onfocus="mostrarAsesoramiento('gastosAdministracion')">
+                                   placeholder="0.00" oninput="calcularSeccionB()">
                         </div>
-                        <small class="form-text">🏢 Sueldos administrativos, alquiler, servicios</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="gastosOperacion">
-                            <i class="fas fa-cogs"></i> Gastos de Operación:
-                            <span class="label-help" onclick="mostrarAsesoramiento('gastosOperacion')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="gastosOperacion">Gastos de Operación:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-tools"></i>
+                            <i class="fas fa-cogs"></i>
                             <input type="number" id="gastosOperacion" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionB()">
                         </div>
-                        <small class="form-text">🔧 Mantenimiento, reparaciones, combustibles</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="gastosFinancieros">
-                            <i class="fas fa-hand-holding-usd"></i> Gastos Financieros (Intereses):
-                            <span class="label-help" onclick="mostrarAsesoramiento('gastosFinancieros')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="gastosFinancieros">Gastos Financieros (Intereses):</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-credit-card"></i>
+                            <i class="fas fa-hand-holding-usd"></i>
                             <input type="number" id="gastosFinancieros" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionB()"
-                                   onfocus="mostrarAsesoramiento('gastosFinancieros')">
+                                   placeholder="0.00" oninput="calcularSeccionB()">
                         </div>
-                        <small class="form-text">💳 Intereses de créditos y préstamos</small>
+                        <small class="form-text">Intereses de créditos y préstamos</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="otrosGastos">
-                            <i class="fas fa-receipt"></i> Otros Gastos Deducibles:
-                            <span class="label-help" onclick="mostrarAsesoramiento('otrosGastos')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="otrosGastos">Otros Gastos Deducibles:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-file-contract"></i>
+                            <i class="fas fa-receipt"></i>
                             <input type="number" id="otrosGastos" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionB()">
                         </div>
-                        <small class="form-text">📝 Publicidad, capacitación, asesorías</small>
                     </div>
                 </div>
                 
@@ -342,78 +248,64 @@
                 <div class="form-card results-card">
                     <h3><i class="fas fa-balance-scale"></i> Utilidad del Período</h3>
                     
-                    <div class="calculation-steps">
-                        <div class="result-item">
-                            <span>Ingresos Netos (Sección A):</span>
-                            <span id="ingresosNetosB" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Costo de Ventas:</span>
-                            <span id="totalCostoVentas" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Gastos Administración:</span>
-                            <span id="totalGastosAdmin" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Gastos Operación:</span>
-                            <span id="totalGastosOperacion" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Gastos Financieros:</span>
-                            <span id="totalGastosFinancieros" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Otros Gastos:</span>
-                            <span id="totalOtrosGastos" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <hr class="result-divider">
-                        
-                        <div class="result-item total">
-                            <span><strong>UTILIDAD ANTES DE AJUSTES:</strong></span>
-                            <span id="utilidadAntesAjustes" class="result-value total-value">$0.00</span>
-                        </div>
+                    <div class="result-item">
+                        <span>Ingresos Netos (Sección A):</span>
+                        <span id="ingresosNetosB" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Costo de Ventas:</span>
+                        <span id="totalCostoVentas" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Gastos Administración:</span>
+                        <span id="totalGastosAdmin" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Gastos Operación:</span>
+                        <span id="totalGastosOperacion" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Gastos Financieros:</span>
+                        <span id="totalGastosFinancieros" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Otros Gastos:</span>
+                        <span id="totalOtrosGastos" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <hr class="result-divider">
+                    
+                    <div class="result-item total">
+                        <span><strong>UTILIDAD ANTES DE AJUSTES:</strong></span>
+                        <span id="utilidadAntesAjustes" class="result-value total-value">$0.00</span>
                     </div>
                     
                     <div class="result-note">
                         <i class="fas fa-info-circle"></i>
-                        <div>
-                            <strong>⚖️ Ajustes pendientes:</strong> Este valor será ajustado en la Sección D con adiciones y deducciones
-                        </div>
+                        <span>Este valor se ajusta en la Sección D</span>
                     </div>
                 </div>
             </div>
             
             <div class="section-navigation">
-                <div class="progress-info">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50%"></div>
-                    </div>
-                    <span>Paso 2 de 4</span>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn-prev" onclick="showSection('seccion-a')">
-                        <i class="fas fa-arrow-left"></i> Volver a Sección A
-                    </button>
-                    <button class="btn-next" onclick="showSection('seccion-c')">
-                        Continuar a Sección D <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
+                <button class="btn-prev" onclick="showSection('seccion-a')">
+                    <i class="fas fa-arrow-left"></i> Volver a Sección A
+                </button>
+                <button class="btn-next" onclick="showSection('seccion-c')">
+                    Continuar a Sección D <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </section>
 
         <!-- Sección C: Ajustes Fiscales -->
         <section id="seccion-c" class="form-section">
-            <div class="section-header">
-                <h2><i class="fas fa-adjust"></i> Sección D: Ajustes Fiscales</h2>
-                <p class="section-guide">Ajustes (adiciones y deducciones) requeridos por la normativa tributaria.</p>
-            </div>
+            <h2><i class="fas fa-adjust"></i> Sección D: Ajustes Fiscales</h2>
+            <p class="section-subtitle">Adiciones y Deducciones a la Utilidad</p>
             
             <div class="form-grid">
                 <!-- Adiciones -->
@@ -421,64 +313,42 @@
                     <h3 class="additions-title"><i class="fas fa-plus-circle"></i> Adiciones (Suman a la utilidad)</h3>
                     
                     <div class="form-group">
-                        <label for="ajusteDepreciacion">
-                            <i class="fas fa-chart-line"></i> Ajuste por Depreciación:
-                            <span class="label-help" onclick="mostrarAsesoramiento('ajusteDepreciacion')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="ajusteDepreciacion">Ajuste por Depreciación:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-tachometer-alt"></i>
+                            <i class="fas fa-chart-line"></i>
                             <input type="number" id="ajusteDepreciacion" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionC()"
-                                   onfocus="mostrarAsesoramiento('ajusteDepreciacion')">
+                                   placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">📊 Diferencia por tasas superiores a las legales</small>
+                        <small class="form-text">Diferencia por tasas superiores a las legales</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="multasRecargos">
-                            <i class="fas fa-gavel"></i> Multas y Recargos:
-                            <span class="label-help" onclick="mostrarAsesoramiento('multasRecargos')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="multasRecargos">Multas y Recargos:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
+                            <i class="fas fa-gavel"></i>
                             <input type="number" id="multasRecargos" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">⚖️ Gastos no deducibles por disposición legal</small>
+                        <small class="form-text">Gastos no deducibles por disposición legal</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="cuentasIncobrables">
-                            <i class="fas fa-file-invoice-dollar"></i> Cancelación Cuentas Incobrables:
-                            <span class="label-help" onclick="mostrarAsesoramiento('cuentasIncobrables')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="cuentasIncobrables">Cancelación Cuentas Incobrables:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-times-circle"></i>
+                            <i class="fas fa-file-invoice-dollar"></i>
                             <input type="number" id="cuentasIncobrables" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">💸 Excedente sobre provisión creada</small>
+                        <small class="form-text">Excedente sobre provisión creada</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="otrasAdiciones">
-                            <i class="fas fa-plus"></i> Otras Adiciones:
-                            <span class="label-help" onclick="mostrarAsesoramiento('otrasAdiciones')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="otrasAdiciones">Otras Adiciones:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-plus-square"></i>
+                            <i class="fas fa-plus"></i>
                             <input type="number" id="otrasAdiciones" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">📈 Otros ajustes positivos requeridos</small>
                     </div>
                 </div>
                 
@@ -487,71 +357,47 @@
                     <h3 class="deductions-title"><i class="fas fa-minus-circle"></i> Deducciones (Restan de la utilidad)</h3>
                     
                     <div class="form-group">
-                        <label for="reservaContingencias">
-                            <i class="fas fa-shield-alt"></i> Reserva para Contingencias:
-                            <span class="label-help" onclick="mostrarAsesoramiento('reservaContingencias')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="reservaContingencias">Reserva para Contingencias:</label>
                         <div class="input-group">
                             <div class="input-with-icon">
-                                <i class="fas fa-piggy-bank"></i>
+                                <i class="fas fa-shield-alt"></i>
                                 <input type="number" id="reservaContingencias" min="0" step="0.01" 
-                                       placeholder="0.00" oninput="calcularSeccionC()"
-                                       onfocus="mostrarAsesoramiento('reservaContingencias')">
+                                       placeholder="0.00" oninput="calcularSeccionC()">
                             </div>
                             <button class="btn-calc" onclick="calcularReservaContingencias()">
                                 <i class="fas fa-calculator"></i> Calcular Auto
                             </button>
                         </div>
-                        <small class="form-text">🛡️ % sobre gastos totales (generalmente 10%)</small>
+                        <small class="form-text">% sobre gastos totales (generalmente 10%)</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="ingresosNoImponibles">
-                            <i class="fas fa-ban"></i> Ingresos No Imponibles:
-                            <span class="label-help" onclick="mostrarAsesoramiento('ingresosNoImponibles')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="ingresosNoImponibles">Ingresos No Imponibles:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-hand-holding-usd"></i>
+                            <i class="fas fa-ban"></i>
                             <input type="number" id="ingresosNoImponibles" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionC()"
-                                   onfocus="mostrarAsesoramiento('ingresosNoImponibles')">
+                                   placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">✅ Rentas exentas por disposición especial</small>
+                        <small class="form-text">Rentas exentas por disposición especial</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="perdidasAnteriores">
-                            <i class="fas fa-history"></i> Pérdidas Fiscales Anteriores:
-                            <span class="label-help" onclick="mostrarAsesoramiento('perdidasAnteriores')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="perdidasAnteriores">Pérdidas Fiscales Anteriores:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-redo"></i>
+                            <i class="fas fa-history"></i>
                             <input type="number" id="perdidasAnteriores" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionC()"
-                                   onfocus="mostrarAsesoramiento('perdidasAnteriores')">
+                                   placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">📆 Amortización acordada con ONAT</small>
+                        <small class="form-text">Amortización acordada con ONAT</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="otrasDeducciones">
-                            <i class="fas fa-minus"></i> Otras Deducciones:
-                            <span class="label-help" onclick="mostrarAsesoramiento('otrasDeducciones')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="otrasDeducciones">Otras Deducciones:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-minus-square"></i>
+                            <i class="fas fa-minus"></i>
                             <input type="number" id="otrasDeducciones" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionC()">
                         </div>
-                        <small class="form-text">📉 Otros ajustes negativos permitidos</small>
                     </div>
                 </div>
                 
@@ -559,121 +405,87 @@
                 <div class="form-card results-card">
                     <h3><i class="fas fa-balance-scale"></i> Resultado de Ajustes</h3>
                     
-                    <div class="calculation-steps">
-                        <div class="result-item">
-                            <span>Utilidad antes de Ajustes:</span>
-                            <span id="utilidadAntesAjustesC" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item addition">
-                            <span>(+) Total Adiciones:</span>
-                            <span id="totalAdiciones" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Total Deducciones:</span>
-                            <span id="totalDeducciones" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <hr class="result-divider">
-                        
-                        <div class="result-item total">
-                            <span><strong>UTILIDAD NETA IMPONIBLE:</strong></span>
-                            <span id="utilidadNetaImponible" class="result-value total-value">$0.00</span>
-                        </div>
+                    <div class="result-item">
+                        <span>Utilidad antes de Ajustes:</span>
+                        <span id="utilidadAntesAjustesC" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item addition">
+                        <span>(+) Total Adiciones:</span>
+                        <span id="totalAdiciones" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Total Deducciones:</span>
+                        <span id="totalDeducciones" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <hr class="result-divider">
+                    
+                    <div class="result-item total">
+                        <span><strong>UTILIDAD NETA IMPONIBLE:</strong></span>
+                        <span id="utilidadNetaImponible" class="result-value total-value">$0.00</span>
                     </div>
                     
                     <div class="info-box">
                         <h4><i class="fas fa-lightbulb"></i> ¿Qué partidas integran la reserva?</h4>
                         <ul>
-                            <li><i class="fas fa-check-circle"></i> Provisiones para riesgos y gastos futuros</li>
-                            <li><i class="fas fa-check-circle"></i> Estimaciones para litigios en curso</li>
-                            <li><i class="fas fa-check-circle"></i> Previsiones para fluctuaciones del mercado</li>
-                            <li><i class="fas fa-check-circle"></i> Generalmente un % sobre gastos totales</li>
+                            <li>Provisiones para riesgos y gastos futuros</li>
+                            <li>Estimaciones para litigios en curso</li>
+                            <li>Previsiones para fluctuaciones del mercado</li>
+                            <li>Generalmente un % sobre gastos totales</li>
                         </ul>
                     </div>
                 </div>
             </div>
             
             <div class="section-navigation">
-                <div class="progress-info">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
-                    </div>
-                    <span>Paso 3 de 4</span>
-                </div>
-                <div class="nav-buttons">
-                    <button class="btn-prev" onclick="showSection('seccion-b')">
-                        <i class="fas fa-arrow-left"></i> Volver a Sección B
-                    </button>
-                    <button class="btn-next" onclick="showSection('seccion-d')">
-                        Continuar a Sección C <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
+                <button class="btn-prev" onclick="showSection('seccion-b')">
+                    <i class="fas fa-arrow-left"></i> Volver a Sección B
+                </button>
+                <button class="btn-next" onclick="showSection('seccion-d')">
+                    Continuar a Sección C <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </section>
 
         <!-- Sección D: Liquidación del Impuesto -->
         <section id="seccion-d" class="form-section">
-            <div class="section-header">
-                <h2><i class="fas fa-file-invoice-dollar"></i> Sección C: Liquidación del Impuesto</h2>
-                <p class="section-guide">Cálculo final del impuesto a pagar o saldo a favor.</p>
-            </div>
+            <h2><i class="fas fa-file-invoice-dollar"></i> Sección C: Liquidación del Impuesto</h2>
             
             <div class="form-grid">
                 <!-- Cálculo del Impuesto -->
                 <div class="form-card">
                     <h3><i class="fas fa-calculator"></i> Cálculo del Impuesto</h3>
                     
-                    <div class="alert-tcp" id="tcpAlert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>
-                            <strong>⚠️ ATENCIÓN TCP:</strong> Los pagos a cuenta son definitivos. 
-                            <br>La ONAT NO devuelve excedentes pagados en anticipos.
-                        </div>
-                    </div>
-                    
                     <div class="form-group">
-                        <label for="tipoImpositivo">
-                            <i class="fas fa-percentage"></i> Tipo Impositivo (%):
-                            <span class="label-help" onclick="mostrarAsesoramiento('tipoImpositivo')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="tipoImpositivo">Tipo Impositivo (%):</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-chart-pie"></i>
+                            <i class="fas fa-percentage"></i>
                             <input type="number" id="tipoImpositivo" min="0" max="100" step="0.1" 
-                                   value="35" oninput="calcularSeccionD()"
-                                   onfocus="mostrarAsesoramiento('tipoImpositivo')">
+                                   value="35" oninput="calcularSeccionD()">
                         </div>
-                        <small class="form-text">📊 Generalmente 35% (Resolución No. 350)</small>
+                        <small class="form-text">Generalmente 35% (Resolución No. 350)</small>
                     </div>
                     
-                    <div class="preview-calc">
-                        <div class="result-item">
-                            <span>Utilidad Neta Imponible:</span>
-                            <span id="utilidadNetaImponibleD" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item">
-                            <span>Impuesto Bruto (35%):</span>
-                            <span id="impuestoBruto" class="result-value">$0.00</span>
-                        </div>
+                    <div class="result-item">
+                        <span>Utilidad Neta Imponible:</span>
+                        <span id="utilidadNetaImponibleD" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Impuesto Bruto (35%):</span>
+                        <span id="impuestoBruto" class="result-value">$0.00</span>
                     </div>
                     
                     <div class="form-group">
-                        <label for="bonificaciones">
-                            <i class="fas fa-gift"></i> Bonificaciones Aplicables:
-                            <span class="label-help" onclick="mostrarAsesoramiento('bonificaciones')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="bonificaciones">Bonificaciones Aplicables:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-award"></i>
+                            <i class="fas fa-gift"></i>
                             <input type="number" id="bonificaciones" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionD()">
                         </div>
-                        <small class="form-text">🎁 Beneficios fiscales autorizados</small>
+                        <small class="form-text">Beneficios fiscales autorizados</small>
                     </div>
                 </div>
                 
@@ -681,58 +493,45 @@
                 <div class="form-card">
                     <h3><i class="fas fa-calendar-check"></i> Pagos a Cuenta</h3>
                     
-                    <div class="form-group">
-                        <label for="pagoTrimestre1">
-                            <i class="fas fa-calendar"></i> 1er Trimestre (Ene-Mar):
-                            <span class="label-help" onclick="mostrarAsesoramiento('pagoTrimestre1')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-qrcode"></i>
-                            <input type="number" id="pagoTrimestre1" min="0" step="0.01" 
-                                   placeholder="0.00" oninput="calcularSeccionD()"
-                                   onfocus="mostrarAsesoramiento('pagoTrimestre1')">
+                    <div class="alert-tcp" id="tcpAlert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>ATENCIÓN TCP:</strong> Los pagos a cuenta son definitivos. 
+                            La ONAT no devuelve excedentes pagados en anticipos.
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="pagoTrimestre2">
-                            <i class="fas fa-calendar"></i> 2do Trimestre (Abr-Jun):
-                            <span class="label-help" onclick="mostrarAsesoramiento('pagoTrimestre2')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="pagoTrimestre1">1er Trimestre:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-qrcode"></i>
+                            <i class="fas fa-calendar"></i>
+                            <input type="number" id="pagoTrimestre1" min="0" step="0.01" 
+                                   placeholder="0.00" oninput="calcularSeccionD()">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pagoTrimestre2">2do Trimestre:</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar"></i>
                             <input type="number" id="pagoTrimestre2" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionD()">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="pagoTrimestre3">
-                            <i class="fas fa-calendar"></i> 3er Trimestre (Jul-Sep):
-                            <span class="label-help" onclick="mostrarAsesoramiento('pagoTrimestre3')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="pagoTrimestre3">3er Trimestre:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-qrcode"></i>
+                            <i class="fas fa-calendar"></i>
                             <input type="number" id="pagoTrimestre3" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionD()">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="pagoTrimestre4">
-                            <i class="fas fa-calendar"></i> 4to Trimestre (Oct-Dic):
-                            <span class="label-help" onclick="mostrarAsesoramiento('pagoTrimestre4')">
-                                <i class="fas fa-question-circle"></i>
-                            </span>
-                        </label>
+                        <label for="pagoTrimestre4">4to Trimestre:</label>
                         <div class="input-with-icon">
-                            <i class="fas fa-qrcode"></i>
+                            <i class="fas fa-calendar"></i>
                             <input type="number" id="pagoTrimestre4" min="0" step="0.01" 
                                    placeholder="0.00" oninput="calcularSeccionD()">
                         </div>
@@ -748,75 +547,61 @@
                 <div class="form-card results-card final-results">
                     <h3><i class="fas fa-file-signature"></i> Liquidación Final</h3>
                     
-                    <div class="calculation-steps">
-                        <div class="result-item">
-                            <span>Impuesto Bruto:</span>
-                            <span id="impuestoBrutoFinal" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Bonificaciones:</span>
-                            <span id="totalBonificaciones" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <div class="result-item deduction">
-                            <span>(-) Pagos a Cuenta:</span>
-                            <span id="totalPagosCuentaFinal" class="result-value">$0.00</span>
-                        </div>
-                        
-                        <hr class="result-divider">
-                        
-                        <div class="result-item total">
-                            <span><strong>SALDO A PAGAR:</strong></span>
-                            <span id="saldoPagar" class="result-value total-value">$0.00</span>
-                        </div>
+                    <div class="result-item">
+                        <span>Impuesto Bruto:</span>
+                        <span id="impuestoBrutoFinal" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Bonificaciones:</span>
+                        <span id="totalBonificaciones" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item deduction">
+                        <span>(-) Pagos a Cuenta:</span>
+                        <span id="totalPagosCuentaFinal" class="result-value">$0.00</span>
+                    </div>
+                    
+                    <hr class="result-divider">
+                    
+                    <div class="result-item total">
+                        <span><strong>SALDO A PAGAR:</strong></span>
+                        <span id="saldoPagar" class="result-value total-value">$0.00</span>
                     </div>
                     
                     <div class="result-note important">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <div>
-                            <strong id="tcpNote">Para TCP: Verificar cálculo antes de pagar anticipos</strong>
-                            <br><small>Los pagos a cuenta son DEFINITIVOS - SIN DEVOLUCIÓN</small>
-                        </div>
+                        <span id="tcpNote">Para TCP: Verificar cálculo antes de pagar anticipos</span>
                     </div>
                     
                     <div class="info-box">
-                        <h4><i class="fas fa-info-circle"></i> Gestión del Excedente:</h4>
+                        <h4><i class="fas fa-info-circle"></i> Gestion del Excedente:</h4>
                         <ul>
-                            <li><i class="fas fa-building"></i> <strong>Empresas estatales:</strong> Pueden compensar o solicitar devolución</li>
-                            <li><i class="fas fa-user-tie"></i> <strong>TCP:</strong> Pagos a cuenta son definitivos - SIN DEVOLUCIÓN</li>
-                            <li><i class="fas fa-calculator"></i> Calcular cuidadosamente los anticipos trimestrales</li>
+                            <li><strong>Empresas estatales:</strong> Pueden compensar o solicitar devolución</li>
+                            <li><strong>TCP:</strong> Pagos a cuenta son definitivos - SIN DEVOLUCIÓN</li>
+                            <li>Calcular cuidadosamente los anticipos trimestrales</li>
                         </ul>
                     </div>
                 </div>
             </div>
             
             <div class="final-actions">
-                <div class="progress-info">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
-                    </div>
-                    <span>Paso 4 de 4 - ¡Completado!</span>
-                </div>
+                <button class="btn-prev" onclick="showSection('seccion-c')">
+                    <i class="fas fa-arrow-left"></i> Volver a Sección D
+                </button>
                 
-                <div class="nav-buttons">
-                    <button class="btn-prev" onclick="showSection('seccion-c')">
-                        <i class="fas fa-arrow-left"></i> Volver a Sección D
+                <div class="action-buttons">
+                    <button class="btn-export" onclick="exportarDeclaracion()">
+                        <i class="fas fa-file-export"></i> Exportar Declaración
                     </button>
                     
-                    <div class="action-buttons">
-                        <button class="btn-export" onclick="exportarDeclaracion()">
-                            <i class="fas fa-file-export"></i> Exportar Declaración
-                        </button>
-                        
-                        <button class="btn-generar" onclick="generarDeclaracion()">
-                            <i class="fas fa-file-pdf"></i> Generar DJ-08
-                        </button>
-                        
-                        <button class="btn-reset" onclick="resetForm()">
-                            <i class="fas fa-redo"></i> Nueva Declaración
-                        </button>
-                    </div>
+                    <button class="btn-generar" onclick="generarDeclaracion()">
+                        <i class="fas fa-file-pdf"></i> Generar DJ-08
+                    </button>
+                    
+                    <button class="btn-reset" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Nueva Declaración
+                    </button>
                 </div>
             </div>
         </section>
@@ -826,18 +611,18 @@
     <div id="helpModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-question-circle"></i> Centro de Ayuda - DJ-08 Automatizada</h3>
+                <h3><i class="fas fa-question-circle"></i> Ayuda - DJ-08 Automatizada</h3>
                 <button class="close-modal" onclick="closeHelp()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="help-section">
                     <h4><i class="fas fa-info-circle"></i> ¿Qué ingresos son no imponibles?</h4>
                     <ul>
-                        <li><i class="fas fa-check"></i> Rentas exentas por disposiciones especiales</li>
-                        <li><i class="fas fa-check"></i> Indemnizaciones por seguros</li>
-                        <li><i class="fas fa-check"></i> Herencias y donaciones (en ciertas condiciones)</li>
-                        <li><i class="fas fa-check"></i> Subsidios estatales específicos</li>
-                        <li><i class="fas fa-check"></i> Ingresos por exportación (en regímenes especiales)</li>
+                        <li>Rentas exentas por disposiciones especiales</li>
+                        <li>Indemnizaciones por seguros</li>
+                        <li>Herencias y donaciones (en ciertas condiciones)</li>
+                        <li>Subsidios estatales específicos</li>
+                        <li>Ingresos por exportación (en regímenes especiales)</li>
                     </ul>
                 </div>
                 
@@ -845,10 +630,10 @@
                     <h4><i class="fas fa-exclamation-triangle"></i> Advertencia Importante para TCP</h4>
                     <p>Los Trabajadores por Cuenta Propia deben tener especial cuidado con los pagos a cuenta, ya que:</p>
                     <ul>
-                        <li><i class="fas fa-ban"></i> Son pagos <strong>definitivos</strong></li>
-                        <li><i class="fas fa-ban"></i> La ONAT <strong>NO realiza devoluciones</strong> de excedentes</li>
-                        <li><i class="fas fa-ban"></i> Cualquier sobrepago constituye una pérdida</li>
-                        <li><i class="fas fa-calculator"></i> Utilice el simulador trimestral para calcular anticipos precisos</li>
+                        <li>Son pagos <strong>definitivos</strong></li>
+                        <li>La ONAT <strong>NO realiza devoluciones</strong> de excedentes</li>
+                        <li>Cualquier sobrepago constituye una pérdida</li>
+                        <li>Utilice el simulador trimestral para calcular anticipos precisos</li>
                     </ul>
                 </div>
                 
@@ -856,35 +641,14 @@
                     <h4><i class="fas fa-calculator"></i> Cálculo Automático de Reserva</h4>
                     <p>La plataforma calcula automáticamente la reserva para contingencias aplicando un porcentaje sobre el total de gastos. Generalmente se aplica un 10%.</p>
                 </div>
-                
-                <div class="help-section">
-                    <h4><i class="fas fa-lightbulb"></i> ¿Cómo usar el sistema de asesoramiento?</h4>
-                    <ul>
-                        <li><i class="fas fa-mouse-pointer"></i> <strong>Click en el icono ?</strong> junto a cada campo</li>
-                        <li><i class="fas fa-keyboard"></i> <strong>O al hacer foco</strong> en el campo de entrada</li>
-                        <li><i class="fas fa-info"></i> Aparecerá información específica sobre ese concepto</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
 
     <footer class="main-footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <div>
-                        <h4>DJ-08 Automatizada</h4>
-                        <p>Plataforma Inteligente de Declaración Jurada</p>
-                    </div>
-                </div>
-                <div class="footer-info">
-                    <p><i class="fas fa-exclamation-circle"></i> Esta herramienta es de apoyo y no sustituye la asesoría profesional.</p>
-                    <p><i class="fas fa-balance-scale"></i> Consulte siempre con un contador especializado.</p>
-                    <p class="version">Versión 2.0 · Actualizado: Enero 2024</p>
-                </div>
-            </div>
+            <p>Plataforma DJ-08 Automatizada - Versión 1.0</p>
+            <p class="footer-note">Esta herramienta es de apoyo y no sustituye la asesoría profesional. Consulte siempre con un contador especializado.</p>
         </div>
     </footer>
 
