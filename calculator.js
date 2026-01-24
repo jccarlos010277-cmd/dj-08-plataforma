@@ -1,113 +1,169 @@
-// calculator.js - Calculadora de Impuesto Mensual
+// calculator.js - Calculadora Actualizada según Normativa 2025
 
 let datosCalculadora = {
     impuestos: [
-        { id: 1, nombre: 'Impuesto sobre Utilidades', tasa: 35, activo: true },
-        { id: 2, nombre: 'Contribución a la Seguridad Social', tasa: 5, activo: true }
+        { 
+            id: 1, 
+            nombre: 'Pago a Cuenta Mensual TCP', 
+            tasa: 5, 
+            activo: true,
+            descripcion: '5% sobre ingresos brutos (después de mínimo exento mensual)',
+            esDefinitivo: true
+        },
+        { 
+            id: 2, 
+            nombre: 'Seguridad Social', 
+            tasa: 20, 
+            activo: true,
+            descripcion: '20% sobre base seleccionada',
+            baseMinima: 2000
+        },
+        { 
+            id: 3, 
+            nombre: 'Impuesto sobre Ventas', 
+            tasa: 10, 
+            activo: false,
+            descripcion: 'Aplicable según actividad'
+        }
     ],
     ingresosMensuales: 0,
-    resultados: {}
+    resultados: {},
+    escalaProgresiva: [], // Se cargará desde normativas.json
+    parametrosFiscales: {}
 };
 
-let taxChart = null;
+// Cargar normativas al inicio
+async function cargarNormativas() {
+    try {
+        const response = await fetch('normativas.json');
+        const normativas = await response.json();
+        
+        datosCalculadora.escalaProgresiva = normativas.normativas.escala_progresiva;
+        datosCalculadora.parametrosFiscales = normativas.normativas.parametros_fiscales;
+        datosCalculadora.advertencias = normativas.normativas.advertencias_tcp;
+        datosCalculadora.reglasOro = normativas.normativas.reglas_oro;
+        
+        console.log('Normativas fiscales 2025 cargadas correctamente');
+    } catch (error) {
+        console.error('Error cargando normativas:', error);
+        // Valores por defecto en caso de error
+        datosCalculadora.parametrosFiscales = {
+            minimo_exento_anual: 39120,
+            minimo_exento_mensual: 3260,
+            porcentaje_pago_cuenta: 5
+        };
+    }
+}
 
-// Inicializar calculadora
+// Inicializar calculadora con normativas
 function initCalculator() {
-    cargarImpuestos();
-    setupChart();
-    cargarResultadosGuardados();
-}
-
-function cargarImpuestos() {
-    const taxesList = document.getElementById('taxesList');
-    taxesList.innerHTML = '';
-    
-    datosCalculadora.impuestos.forEach((impuesto, index) => {
-        const taxItem = document.createElement('div');
-        taxItem.className = 'tax-item';
-        taxItem.innerHTML = `
-            <div class="tax-info">
-                <div class="tax-name">${impuesto.nombre}</div>
-                <div class="tax-rate">${impuesto.tasa}%</div>
-            </div>
-            <div class="tax-actions">
-                <button class="btn-edit" onclick="editTax(${index})">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn-delete" onclick="deleteTax(${index})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        taxesList.appendChild(taxItem);
-    });
-    
-    // Calcular después de cargar
-    calculateMonthlyTax();
-}
-
-function addTax() {
-    const name = document.getElementById('taxName').value.trim();
-    const rate = parseFloat(document.getElementById('taxRate').value);
-    
-    if (!name || isNaN(rate) || rate <= 0) {
-        alert('Por favor, ingresa un nombre y tasa válidos');
-        return;
-    }
-    
-    const nuevoImpuesto = {
-        id: Date.now(),
-        nombre: name,
-        tasa: rate,
-        activo: true
-    };
-    
-    datosCalculadora.impuestos.push(nuevoImpuesto);
-    cargarImpuestos();
-    
-    // Limpiar formulario
-    document.getElementById('taxName').value = '';
-    document.getElementById('taxRate').value = '';
-    
-    showConfirmation('Impuesto añadido correctamente', 'success');
-}
-
-function editTax(index) {
-    const impuesto = datosCalculadora.impuestos[index];
-    const nuevoNombre = prompt('Nuevo nombre del impuesto:', impuesto.nombre);
-    if (nuevoNombre === null) return;
-    
-    const nuevaTasa = prompt('Nueva tasa (%):', impuesto.tasa);
-    if (nuevaTasa === null) return;
-    
-    const tasaNum = parseFloat(nuevaTasa);
-    if (isNaN(tasaNum) || tasaNum < 0) {
-        alert('Tasa inválida');
-        return;
-    }
-    
-    impuesto.nombre = nuevoNombre;
-    impuesto.tasa = tasaNum;
-    
-    cargarImpuestos();
-    showConfirmation('Impuesto actualizado', 'success');
-}
-
-function deleteTax(index) {
-    if (confirm('¿Eliminar este impuesto?')) {
-        datosCalculadora.impuestos.splice(index, 1);
+    cargarNormativas().then(() => {
         cargarImpuestos();
-        showConfirmation('Impuesto eliminado', 'success');
+        setupChart();
+        cargarResultadosGuardados();
+        mostrarAdvertenciasTCP();
+    });
+}
+
+// Mostrar advertencias importantes para TCP
+function mostrarAdvertenciasTCP() {
+    const tcpToggle = document.getElementById('tcpToggle');
+    if (tcpToggle && tcpToggle.checked && datosCalculadora.advertencias) {
+        showConfirmation(`⚠️ ${datosCalculadora.advertencias.pagos_a_cuenta}`, 'warning');
     }
 }
 
-function setPresetTax(name, rate) {
-    document.getElementById('taxName').value = name;
-    document.getElementById('taxRate').value = rate;
+// CALCULO DE PAGO MENSUAL TCP (5% sobre excedente)
+function calcularPagoMensualTCP(ingresoMensual) {
+    const minimoExentoMensual = datosCalculadora.parametrosFiscales.minimo_exento_mensual || 3260;
+    const porcentajePago = datosCalculadora.parametrosFiscales.porcentaje_pago_cuenta || 5;
     
-    showConfirmation(`Tasa predefinida "${name}" cargada`, 'info');
+    if (ingresoMensual <= minimoExentoMensual) {
+        return 0; // No paga si no supera el mínimo exento
+    }
+    
+    const baseCalculo = ingresoMensual - minimoExentoMensual;
+    const pagoMensual = baseCalculo * (porcentajePago / 100);
+    
+    return pagoMensual;
 }
 
+// CALCULO DE SEGURIDAD SOCIAL (20% sobre base seleccionada)
+function calcularSeguridadSocial(baseSeguridadSocial) {
+    const tasaSS = 20; // 20% fijo
+    const baseMinima = datosCalculadora.parametrosFiscales.seguridad_social?.base_minima || 2000;
+    
+    // Asegurar que la base no sea menor al mínimo
+    const baseCalculo = Math.max(baseSeguridadSocial, baseMinima);
+    const aporteSS = baseCalculo * (tasaSS / 100);
+    
+    return {
+        aporte: aporteSS,
+        base: baseCalculo,
+        tasa: tasaSS
+    };
+}
+
+// CALCULO DE LIQUIDACIÓN ANUAL CON ESCALA PROGRESIVA
+function calcularLiquidacionAnual(ingresoAnual, gastosAnuales) {
+    const minimoExentoAnual = datosCalculadora.parametrosFiscales.minimo_exento_anual || 39120;
+    
+    // 1. Calcular Utilidad Imponible
+    let utilidadImponible = ingresoAnual - gastosAnuales;
+    
+    // 2. Aplicar mínimo exento
+    utilidadImponible = Math.max(0, utilidadImponible - minimoExentoAnual);
+    
+    // Si la utilidad después del mínimo exento es 0 o negativa
+    if (utilidadImponible <= 0) {
+        return {
+            utilidadImponible: 0,
+            impuestoBruto: 0,
+            impuestoNeto: 0,
+            tramos: [],
+            mensaje: 'No tiene impuesto a pagar (no supera el mínimo exento)'
+        };
+    }
+    
+    // 3. Aplicar escala progresiva
+    let impuestoAcumulado = 0;
+    let utilidadRestante = utilidadImponible;
+    const tramosAplicados = [];
+    
+    // Ordenar escala de menor a mayor
+    const escalaOrdenada = [...datosCalculadora.escalaProgresiva].sort((a, b) => a.limite_inferior - b.limite_inferior);
+    
+    for (const tramo of escalaOrdenada) {
+        if (utilidadRestante <= 0) break;
+        
+        const limiteSuperior = tramo.limite_superior === null ? Infinity : tramo.limite_superior;
+        const baseTramo = Math.min(utilidadRestante, limiteSuperior - tramo.limite_inferior);
+        
+        if (baseTramo > 0) {
+            const impuestoTramo = baseTramo * (tramo.porcentaje / 100);
+            impuestoAcumulado += impuestoTramo;
+            
+            tramosAplicados.push({
+                tramo: tramo.descripcion,
+                base: baseTramo,
+                tasa: tramo.porcentaje,
+                impuesto: impuestoTramo
+            });
+            
+            utilidadRestante -= baseTramo;
+        }
+    }
+    
+    return {
+        utilidadImponible: utilidadImponible,
+        impuestoBruto: impuestoAcumulado,
+        impuestoNeto: impuestoAcumulado, // Sin bonificaciones por ahora
+        tramos: tramosAplicados,
+        mensaje: `Liquidación calculada con escala progresiva 2025`
+    };
+}
+
+// FUNCIÓN PRINCIPAL ACTUALIZADA - CALCULO MENSUAL
 function calculateMonthlyTax() {
     const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
     const month = parseInt(document.getElementById('monthSelect').value);
@@ -120,36 +176,53 @@ function calculateMonthlyTax() {
     
     datosCalculadora.impuestos.forEach(impuesto => {
         if (impuesto.activo) {
-            const taxAmount = income * (impuesto.tasa / 100);
+            let taxAmount = 0;
+            
+            if (impuesto.nombre === 'Pago a Cuenta Mensual TCP') {
+                // Cálculo especial para TCP (5% sobre excedente)
+                taxAmount = calcularPagoMensualTCP(income);
+                
+                breakdown.push({
+                    name: impuesto.nombre,
+                    rate: impuesto.tasa,
+                    amount: taxAmount,
+                    descripcion: `5% sobre $${(income - 3260).toFixed(2)} (ingreso - mínimo exento)`,
+                    esDefinitivo: true
+                });
+                
+            } else if (impuesto.nombre === 'Seguridad Social') {
+                // Preguntar base para seguridad social
+                const baseSS = prompt(`Ingrese la base para Seguridad Social (mínimo ${impuesto.baseMinima} CUP):`, impuesto.baseMinima) || impuesto.baseMinima;
+                const calculoSS = calcularSeguridadSocial(parseFloat(baseSS));
+                
+                taxAmount = calculoSS.aporte;
+                
+                breakdown.push({
+                    name: impuesto.nombre,
+                    rate: impuesto.tasa,
+                    amount: taxAmount,
+                    descripcion: `20% sobre base de $${calculoSS.base.toFixed(2)}`,
+                    base: calculoSS.base
+                });
+                
+            } else {
+                // Cálculo normal para otros impuestos
+                taxAmount = income * (impuesto.tasa / 100);
+                breakdown.push({
+                    name: impuesto.nombre,
+                    rate: impuesto.tasa,
+                    amount: taxAmount
+                });
+            }
+            
             totalTax += taxAmount;
-            breakdown.push({
-                name: impuesto.nombre,
-                rate: impuesto.tasa,
-                amount: taxAmount
-            });
         }
     });
     
     const netIncome = income - totalTax;
     
     // Actualizar UI
-    document.getElementById('monthlyGross').textContent = formatCurrency(income);
-    document.getElementById('monthlyTaxTotal').textContent = formatCurrency(totalTax);
-    document.getElementById('monthlyNet').textContent = formatCurrency(netIncome);
-    
-    // Actualizar desglose
-    const taxBreakdown = document.getElementById('taxBreakdown');
-    taxBreakdown.innerHTML = '';
-    
-    breakdown.forEach(item => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'breakdown-item';
-        itemDiv.innerHTML = `
-            <span>${item.name} (${item.rate}%):</span>
-            <span>${formatCurrency(item.amount)}</span>
-        `;
-        taxBreakdown.appendChild(itemDiv);
-    });
+    actualizarUIResultados(income, totalTax, netIncome, breakdown, month);
     
     // Actualizar proyección anual
     updateAnnualProjection(income, totalTax);
@@ -162,274 +235,220 @@ function calculateMonthlyTax() {
         income,
         totalTax,
         netIncome,
-        breakdown
+        breakdown,
+        fecha: new Date().toISOString(),
+        esDefinitivo: breakdown.some(item => item.esDefinitivo)
     };
     
     saveCalculatorData();
+    
+    // Mostrar advertencia si hay pagos definitivos
+    if (breakdown.some(item => item.esDefinitivo)) {
+        mostrarAdvertenciaPagosDefinitivos();
+    }
 }
 
-function updateAnnualProjection(monthlyIncome, monthlyTax) {
-    const annualIncome = monthlyIncome * 12;
-    const annualTax = monthlyTax * 12;
-    const effectiveRate = annualIncome > 0 ? (annualTax / annualIncome * 100).toFixed(2) : 0;
+// Función auxiliar para actualizar UI
+function actualizarUIResultados(income, totalTax, netIncome, breakdown, month) {
+    document.getElementById('monthlyGross').textContent = formatCurrency(income);
+    document.getElementById('monthlyTaxTotal').textContent = formatCurrency(totalTax);
+    document.getElementById('monthlyNet').textContent = formatCurrency(netIncome);
     
-    document.getElementById('annualIncome').textContent = formatCurrency(annualIncome);
-    document.getElementById('annualTax').textContent = formatCurrency(annualTax);
-    document.getElementById('effectiveRate').textContent = `${effectiveRate}%`;
-}
-
-function setupChart() {
-    const ctx = document.getElementById('taxChart').getContext('2d');
+    // Actualizar desglose
+    const taxBreakdown = document.getElementById('taxBreakdown');
+    taxBreakdown.innerHTML = '';
     
-    taxChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: [
-                    '#3498db', // Azul
-                    '#2ecc71', // Verde
-                    '#e74c3c', // Rojo
-                    '#f39c12', // Naranja
-                    '#9b59b6', // Púrpura
-                    '#1abc9c', // Turquesa
-                    '#34495e', // Azul oscuro
-                    '#e67e22', // Naranja oscuro
-                    '#27ae60', // Verde oscuro
-                    '#8e44ad'  // Púrpura oscuro
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
+    breakdown.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'breakdown-item';
+        
+        let descripcionExtra = '';
+        if (item.descripcion) {
+            descripcionExtra = `<br><small class="breakdown-desc">${item.descripcion}</small>`;
         }
+        
+        if (item.esDefinitivo) {
+            itemDiv.classList.add('definitivo');
+            descripcionExtra += ' <span class="badge-definitivo">DEFINITIVO</span>';
+        }
+        
+        itemDiv.innerHTML = `
+            <div class="breakdown-info">
+                <span class="breakdown-name">${item.name} (${item.rate}%)</span>
+                ${descripcionExtra}
+            </div>
+            <span class="breakdown-amount">${formatCurrency(item.amount)}</span>
+        `;
+        taxBreakdown.appendChild(itemDiv);
     });
 }
 
-function updateChart(breakdown, totalIncome) {
-    if (!taxChart) return;
+// Función para mostrar advertencia de pagos definitivos
+function mostrarAdvertenciaPagosDefinitivos() {
+    const advertenciaDiv = document.createElement('div');
+    advertenciaDiv.className = 'advertencia-tcp';
+    advertenciaDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>ADVERTENCIA TCP:</strong> Los pagos a cuenta mensuales son DEFINITIVOS. 
+        No serán reembolsados si la liquidación anual resulta menor.
+    `;
     
-    const labels = breakdown.map(item => item.name);
-    const data = breakdown.map(item => item.amount);
-    
-    // Añadir ingreso neto si hay datos
-    if (totalIncome > 0) {
-        const netIncome = totalIncome - data.reduce((a, b) => a + b, 0);
-        labels.push('Ingreso Neto');
-        data.push(netIncome);
+    const resultsContainer = document.querySelector('.results-monthly');
+    if (resultsContainer && !resultsContainer.querySelector('.advertencia-tcp')) {
+        resultsContainer.insertBefore(advertenciaDiv, resultsContainer.firstChild);
     }
-    
-    taxChart.data.labels = labels;
-    taxChart.data.datasets[0].data = data;
-    taxChart.update();
 }
 
-function exportMonthlyReport() {
-    const income = datosCalculadora.ingresosMensuales;
-    const month = document.getElementById('monthSelect').value;
-    const monthName = document.getElementById('monthSelect').options[month-1].text;
+// SIMULADOR DE LIQUIDACIÓN ANUAL (NUEVA FUNCIÓN)
+function simularLiquidacionAnual() {
+    const ingresoAnual = datosCalculadora.ingresosMensuales * 12;
+    const gastosAnuales = parseFloat(prompt('Ingrese el total de gastos anuales deducibles:', '0')) || 0;
     
-    if (income <= 0) {
-        alert('Por favor, ingresa un ingreso válido antes de exportar');
-        return;
-    }
+    const resultado = calcularLiquidacionAnual(ingresoAnual, gastosAnuales);
     
-    const report = {
-        fecha: new Date().toISOString(),
-        mes: monthName,
-        ingresos: income,
-        desglose: datosCalculadora.impuestos.filter(t => t.activo).map(t => ({
-            impuesto: t.nombre,
-            tasa: t.tasa,
-            monto: income * (t.tasa / 100)
-        })),
-        totalImpuestos: datosCalculadora.resultados[month]?.totalTax || 0,
-        ingresoNeto: datosCalculadora.resultados[month]?.netIncome || 0
-    };
-    
-    // Crear contenido para CSV
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Reporte Mensual DJ-08\n\n";
-    csvContent += `Mes,${monthName}\n`;
-    csvContent += `Ingreso Bruto,${formatCurrency(income)}\n\n`;
-    csvContent += "Impuesto,Tasa %,Monto\n";
-    
-    report.desglose.forEach(item => {
-        csvContent += `${item.impuesto},${item.tasa}%,${formatCurrency(item.monto)}\n`;
-    });
-    
-    csvContent += `\nTotal Impuestos,${formatCurrency(report.totalImpuestos)}\n`;
-    csvContent += `Ingreso Neto,${formatCurrency(report.ingresoNeto)}\n`;
-    
-    // Crear enlace de descarga
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `reporte-${monthName.toLowerCase()}-${new Date().getFullYear()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    showConfirmation('Reporte exportado exitosamente', 'success');
+    // Mostrar resultados en modal
+    mostrarResultadosLiquidacion(resultado, ingresoAnual, gastosAnuales);
 }
 
-function compareScenarios() {
-    const modal = document.getElementById('compareModal');
-    const compareGrid = document.getElementById('compareGrid');
-    
-    // Limpiar grid
-    compareGrid.innerHTML = '';
-    
-    // Añadir escenario actual
-    addScenarioToGrid('Escenario Actual', datosCalculadora);
-    
-    // Añadir escenario con 10% más de ingresos
-    const scenarioPlus10 = JSON.parse(JSON.stringify(datosCalculadora));
-    scenarioPlus10.ingresosMensuales *= 1.1;
-    calculateScenario(scenarioPlus10);
-    addScenarioToGrid('+10% Ingresos', scenarioPlus10);
-    
-    // Añadir escenario con tasas reducidas
-    const scenarioReduced = JSON.parse(JSON.stringify(datosCalculadora));
-    scenarioReduced.impuestos.forEach(tax => {
-        tax.tasa *= 0.9; // Reducir 10%
-    });
-    calculateScenario(scenarioReduced);
-    addScenarioToGrid('Tasas -10%', scenarioReduced);
-    
-    // Mostrar modal
-    modal.style.display = 'block';
-}
-
-function addScenarioToGrid(name, data) {
-    const compareGrid = document.getElementById('compareGrid');
-    
-    const income = data.ingresosMensuales;
-    const totalTax = data.impuestos
-        .filter(t => t.activo)
-        .reduce((sum, tax) => sum + (income * (tax.tasa / 100)), 0);
-    const netIncome = income - totalTax;
-    const effectiveRate = income > 0 ? (totalTax / income * 100).toFixed(2) : 0;
-    
-    const scenarioCard = document.createElement('div');
-    scenarioCard.className = 'scenario-card';
-    scenarioCard.innerHTML = `
-        <div class="scenario-header">
-            <h5>${name}</h5>
-            <button class="btn-scenario-delete" onclick="this.parentElement.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="scenario-content">
-            <div class="scenario-stat">
-                <span>Ingreso Bruto:</span>
-                <strong>${formatCurrency(income)}</strong>
+// Mostrar resultados de liquidación anual
+function mostrarResultadosLiquidacion(resultado, ingresoAnual, gastosAnuales) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-liquidacion';
+    modal.innerHTML = `
+        <div class="modal-content-liquidacion">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-invoice-dollar"></i> Simulación Liquidación Anual 2025</h3>
+                <button onclick="this.parentElement.parentElement.remove()">&times;</button>
             </div>
-            <div class="scenario-stat">
-                <span>Total Impuestos:</span>
-                <strong>${formatCurrency(totalTax)}</strong>
-            </div>
-            <div class="scenario-stat">
-                <span>Ingreso Neto:</span>
-                <strong>${formatCurrency(netIncome)}</strong>
-            </div>
-            <div class="scenario-stat">
-                <span>Tasa Efectiva:</span>
-                <strong>${effectiveRate}%</strong>
+            <div class="modal-body">
+                <div class="resumen-liquidacion">
+                    <h4>Resumen Fiscal</h4>
+                    <div class="resumen-item">
+                        <span>Ingreso Anual Bruto:</span>
+                        <strong>${formatCurrency(ingresoAnual)}</strong>
+                    </div>
+                    <div class="resumen-item">
+                        <span>Gastos Deducibles:</span>
+                        <strong>${formatCurrency(gastosAnuales)}</strong>
+                    </div>
+                    <div class="resumen-item">
+                        <span>Utilidad Imponible:</span>
+                        <strong>${formatCurrency(resultado.utilidadImponible)}</strong>
+                    </div>
+                    <div class="resumen-item destacado">
+                        <span>Impuesto Anual Calculado:</span>
+                        <strong>${formatCurrency(resultado.impuestoBruto)}</strong>
+                    </div>
+                </div>
+                
+                <div class="tramos-liquidacion">
+                    <h4>Tramos Aplicados (Escala Progresiva)</h4>
+                    ${resultado.tramos.map(tramo => `
+                        <div class="tramo-item">
+                            <span>${tramo.tramo}</span>
+                            <div>
+                                <small>Base: ${formatCurrency(tramo.base)}</small>
+                                <small>Tasa: ${tramo.tasa}%</small>
+                                <strong>Impuesto: ${formatCurrency(tramo.impuesto)}</strong>
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    ${resultado.tramos.length === 0 ? 
+                        '<p class="sin-impuesto">✅ No aplica impuesto (no supera el mínimo exento)</p>' : ''}
+                </div>
+                
+                <div class="advertencia-liquidacion">
+                    <i class="fas fa-info-circle"></i>
+                    <p>${datosCalculadora.reglasOro?.join('<br>') || ''}</p>
+                </div>
+                
+                <button class="btn-export-liquidacion" onclick="exportarLiquidacionAnual(${JSON.stringify(resultado).replace(/"/g, '&quot;')}, ${ingresoAnual}, ${gastosAnuales})">
+                    <i class="fas fa-download"></i> Exportar Simulación
+                </button>
             </div>
         </div>
     `;
     
-    compareGrid.appendChild(scenarioCard);
+    document.body.appendChild(modal);
 }
 
-function addScenario() {
-    const scenarioName = prompt('Nombre del nuevo escenario:');
-    if (!scenarioName) return;
+// Exportar liquidación anual
+function exportarLiquidacionAnual(resultado, ingresoAnual, gastosAnuales) {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Simulación Liquidación Anual DJ-08 2025\n\n";
+    csvContent += "Concepto,Monto (CUP)\n";
+    csvContent += `Ingreso Anual Bruto,${ingresoAnual}\n`;
+    csvContent += `Gastos Deducibles,${gastosAnuales}\n`;
+    csvContent += `Utilidad Imponible,${resultado.utilidadImponible}\n`;
+    csvContent += `Impuesto Anual Calculado,${resultado.impuestoBruto}\n\n`;
     
-    // Crear copia de datos actuales
-    const newScenario = JSON.parse(JSON.stringify(datosCalculadora));
-    
-    // Permitir modificar ingresos
-    const newIncome = prompt('Ingreso mensual para este escenario:', newScenario.ingresosMensuales);
-    if (newIncome !== null) {
-        newScenario.ingresosMensuales = parseFloat(newIncome) || 0;
-    }
-    
-    // Permitir modificar tasas
-    if (confirm('¿Desea modificar las tasas impositivas?')) {
-        newScenario.impuestos.forEach((tax, index) => {
-            const newRate = prompt(`Nueva tasa para ${tax.nombre} (%):`, tax.tasa);
-            if (newRate !== null) {
-                tax.tasa = parseFloat(newRate) || tax.tasa;
-            }
+    if (resultado.tramos.length > 0) {
+        csvContent += "Tramos Aplicados\n";
+        csvContent += "Descripción,Base,Tasa%,Impuesto\n";
+        resultado.tramos.forEach(tramo => {
+            csvContent += `${tramo.tramo},${tramo.base},${tramo.tasa},${tramo.impuesto}\n`;
         });
     }
     
-    // Calcular y añadir
-    calculateScenario(newScenario);
-    addScenarioToGrid(scenarioName, newScenario);
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `liquidacion-anual-${new Date().getFullYear()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
-    showConfirmation('Escenario añadido', 'success');
+    showConfirmation('Simulación exportada correctamente', 'success');
 }
 
-function calculateScenario(scenario) {
-    const income = scenario.ingresosMensuales;
-    // El cálculo se hace en addScenarioToGrid
-}
-
-function closeCompareModal() {
-    document.getElementById('compareModal').style.display = 'none';
-}
-
-function saveCalculatorData() {
-    localStorage.setItem('calculator_data', JSON.stringify(datosCalculadora));
-}
-
-function cargarResultadosGuardados() {
-    const saved = localStorage.getItem('calculator_data');
-    if (saved) {
-        datosCalculadora = JSON.parse(saved);
-        // Actualizar UI con datos guardados
-        document.getElementById('monthlyIncome').value = datosCalculadora.ingresosMensuales;
-        cargarImpuestos();
+// Añadir botón de simulación anual en la UI
+function agregarBotonSimulacionAnual() {
+    const calculatorCard = document.querySelector('.calculator-card:nth-child(3)');
+    if (calculatorCard && !calculatorCard.querySelector('.btn-simular-anual')) {
+        const btnSimular = document.createElement('button');
+        btnSimular.className = 'btn-simular-anual';
+        btnSimular.innerHTML = '<i class="fas fa-calculator"></i> Simular Liquidación Anual';
+        btnSimular.onclick = simularLiquidacionAnual;
+        
+        const exportOptions = calculatorCard.querySelector('.export-options');
+        if (exportOptions) {
+            exportOptions.appendChild(btnSimular);
+        }
     }
 }
 
-// Inicializar cuando se muestre la calculadora
-document.addEventListener('DOMContentLoaded', function() {
-    // Escuchar cambios en la sección
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                if (document.getElementById('impuesto-mensual').classList.contains('active')) {
-                    if (!taxChart) {
-                        initCalculator();
-                    }
-                }
-            }
-        });
-    });
-    
-    const target = document.getElementById('impuesto-mensual');
-    if (target) {
-        observer.observe(target, { attributes: true });
-    }
-});
+// Inicializar botón después de cargar
+setTimeout(agregarBotonSimulacionAnual, 1000);
 
-// Formatear moneda mejorado
-function formatCurrency(value) {
-    if (isNaN(value)) value = 0;
-    return '$' + value.toLocaleString('es-CU', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+// ACTUALIZAR LA FUNCIÓN addTax() para incluir impuestos nuevos
+function addTax() {
+    const name = document.getElementById('taxName').value.trim();
+    const rate = parseFloat(document.getElementById('taxRate').value);
+    
+    if (!name || isNaN(rate) || rate <= 0) {
+        alert('Por favor, ingresa un nombre y tasa válidos');
+        return;
+    }
+    
+    // Determinar si es definitivo (para TCP)
+    const esDefinitivo = name.toLowerCase().includes('tcp') || 
+                        name.toLowerCase().includes('pago a cuenta');
+    
+    const nuevoImpuesto = {
+        id: Date.now(),
+        nombre: name,
+        tasa: rate,
+        activo: true,
+        esDefinitivo: esDefinitivo,
+        descripcion: esDefinitivo ? 'Pago definitivo mensual TCP' : ''
+    };
+    
+    datosCalculadora.impuestos.push(nuevoImpuesto);
+    cargarImpuestos();
+    
+    document.getElementById('taxName').value = '';
+    document.getElementById('taxRate').value = '';
+    
+    showConfirmation('Impuesto añadido correctamente', 'success');
 }
