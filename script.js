@@ -1,4 +1,12 @@
-// Funcionalidades Mejoradas
+// script.js - Funcionalidades Mejoradas (Versión Corregida)
+
+// Declarar variables globales necesarias
+let datosDeclaracion = {
+    seccionA: {},
+    seccionB: {},
+    seccionC: {},
+    seccionD: {}
+};
 
 // Carrusel del Banner
 let currentSlide = 1;
@@ -21,7 +29,10 @@ function updateSlide() {
     });
     
     // Mostrar slide actual
-    document.querySelector(`.hero-slide[data-slide="${currentSlide}"]`).classList.add('active');
+    const currentSlideElement = document.querySelector(`.hero-slide[data-slide="${currentSlide}"]`);
+    if (currentSlideElement) {
+        currentSlideElement.classList.add('active');
+    }
     
     // Actualizar dots
     document.querySelectorAll('.dot').forEach(dot => {
@@ -33,7 +44,15 @@ function updateSlide() {
 }
 
 // Auto avanzar el carrusel cada 5 segundos
-setInterval(nextSlide, 5000);
+let carruselInterval = setInterval(nextSlide, 5000);
+
+// Detener carrusel al interactuar
+document.querySelectorAll('.hero-prev, .hero-next, .dot').forEach(element => {
+    element.addEventListener('click', () => {
+        clearInterval(carruselInterval);
+        carruselInterval = setInterval(nextSlide, 5000);
+    });
+});
 
 // Inicializar Dashboard
 function initDashboard() {
@@ -46,15 +65,19 @@ function initDashboard() {
 
 function updateQuickStats() {
     // En una implementación real, esto vendría de una API
-    // Por ahora son valores estáticos
-    console.log('Estadísticas actualizadas');
+    console.log('Dashboard inicializado');
 }
 
 function loadRecentData() {
     // Cargar última declaración del localStorage
     const lastDeclaration = localStorage.getItem('lastDeclaration');
     if (lastDeclaration) {
-        console.log('Última declaración cargada');
+        try {
+            datosDeclaracion = JSON.parse(lastDeclaration);
+            console.log('Última declaración cargada del localStorage');
+        } catch (error) {
+            console.error('Error al cargar datos guardados:', error);
+        }
     }
 }
 
@@ -74,11 +97,31 @@ function iniciarGuia() {
     
     function showNextStep() {
         if (step < messages.length) {
-            alert(messages[step]);
+            // Crear un modal mejorado para la guía
+            const modal = document.createElement('div');
+            modal.className = 'guide-modal';
+            modal.innerHTML = `
+                <div class="guide-content">
+                    <h3><i class="fas fa-compass"></i> Guía DJ-08 - Paso ${step + 1}</h3>
+                    <p>${messages[step]}</p>
+                    <div class="guide-actions">
+                        ${step < messages.length - 1 ? 
+                            `<button onclick="this.parentElement.parentElement.parentElement.remove(); showNextStep();" class="btn-primary">
+                                Siguiente Paso <i class="fas fa-arrow-right"></i>
+                            </button>` : 
+                            `<button onclick="this.parentElement.parentElement.parentElement.remove()" class="btn-success">
+                                Finalizar Guía <i class="fas fa-check"></i>
+                            </button>`
+                        }
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="btn-secondary">
+                            Salir de la Guía
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
             step++;
-            if (confirm('¿Continuar al siguiente paso?')) {
-                showNextStep();
-            }
         }
     }
     
@@ -96,67 +139,153 @@ function showSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
         section.classList.add('active');
+        
+        // Si es la calculadora, inicializarla
+        if (sectionId === 'impuesto-mensual') {
+            setTimeout(() => {
+                if (typeof initCalculator === 'function') {
+                    initCalculator();
+                }
+            }, 100);
+        }
     }
 
     // Actualizar navegación visual
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
+        if (link.getAttribute('onclick')?.includes(sectionId)) {
+            link.classList.add('active');
+        }
     });
 
     // Scroll suave al inicio
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Mostrar ayuda
+function showHelp() {
+    const helpContent = `
+        <div class="help-content">
+            <h3><i class="fas fa-question-circle"></i> Centro de Ayuda DJ-08</h3>
+            <div class="help-sections">
+                <div class="help-section">
+                    <h4><i class="fas fa-video"></i> Tutoriales</h4>
+                    <ul>
+                        <li>📹 Cómo usar la calculadora mensual</li>
+                        <li>📹 Guía completa de la DJ-08</li>
+                        <li>📹 Cómo exportar tus reportes</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class="fas fa-file-alt"></i> Documentación</h4>
+                    <ul>
+                        <li>📄 Normativa fiscal 2025</li>
+                        <li>📄 Instrucciones para TCP</li>
+                        <li>📄 Preguntas frecuentes</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class="fas fa-phone-alt"></i> Soporte</h4>
+                    <p><i class="fas fa-envelope"></i> soporte@dj08.com</p>
+                    <p><i class="fas fa-phone"></i> +53 123 456 7890</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Crear modal de ayuda
+    const modal = document.createElement('div');
+    modal.className = 'help-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-question-circle"></i> Ayuda</h3>
+                <button class="close-modal" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                ${helpContent}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
 // Guardar datos automáticamente
 function autoSave() {
-    const datosCompletos = {
-        timestamp: new Date().toISOString(),
-        datos: datosDeclaracion,
-        calculadora: datosCalculadora
-    };
-    
-    localStorage.setItem('dj08_autosave', JSON.stringify(datosCompletos));
-    console.log('Datos guardados automáticamente');
+    try {
+        const datosCompletos = {
+            timestamp: new Date().toISOString(),
+            datos: datosDeclaracion,
+            calculadora: window.datosCalculadora || {}
+        };
+        
+        localStorage.setItem('dj08_autosave', JSON.stringify(datosCompletos));
+        console.log('Datos guardados automáticamente:', new Date().toLocaleTimeString());
+    } catch (error) {
+        console.error('Error en autoSave:', error);
+    }
 }
 
 // Auto-guardar cada 30 segundos
-setInterval(autoSave, 30000);
+let autoSaveInterval = setInterval(autoSave, 30000);
 
 // Cargar datos guardados al inicio
 window.addEventListener('load', function() {
-    const savedData = localStorage.getItem('dj08_autosave');
-    if (savedData) {
-        if (confirm('¿Desea recuperar los datos de su última sesión?')) {
-            const datos = JSON.parse(savedData);
-            datosDeclaracion = datos.datos || datosDeclaracion;
-            datosCalculadora = datos.calculadora || datosCalculadora;
-            actualizarDatosUI();
+    try {
+        const savedData = localStorage.getItem('dj08_autosave');
+        if (savedData) {
+            if (confirm('¿Desea recuperar los datos de su última sesión?')) {
+                const datos = JSON.parse(savedData);
+                datosDeclaracion = datos.datos || datosDeclaracion;
+                
+                // Actualizar datos de calculadora si existe
+                if (datos.calculadora && window.datosCalculadora) {
+                    window.datosCalculadora = { ...window.datosCalculadora, ...datos.calculadora };
+                }
+                
+                actualizarDatosUI();
+                showConfirmation('Datos recuperados correctamente', 'success');
+            }
         }
+    } catch (error) {
+        console.error('Error al cargar datos guardados:', error);
     }
     
     // Inicializar dashboard
     initDashboard();
+    
+    // Inicializar carrusel
+    updateSlide();
 });
 
 function actualizarDatosUI() {
-    // Recalcular todas las secciones
-    calcularSeccionA();
-    calcularSeccionB();
-    calcularSeccionC();
-    calcularSeccionD();
+    // Recalcular todas las secciones si existen
+    if (typeof calcularSeccionA === 'function') calcularSeccionA();
+    if (typeof calcularSeccionB === 'function') calcularSeccionB();
+    if (typeof calcularSeccionC === 'function') calcularSeccionC();
+    if (typeof calcularSeccionD === 'function') calcularSeccionD();
     
     // Actualizar calculadora si existe
-    if (typeof updateCalculator === 'function') {
-        updateCalculator();
+    if (typeof calculateMonthlyTax === 'function') {
+        calculateMonthlyTax();
     }
 }
 
 // Efectos de Confirmación
 function showConfirmation(message, type = 'success') {
+    // Eliminar confirmaciones anteriores
+    document.querySelectorAll('.confirmation').forEach(el => el.remove());
+    
     const confirmation = document.createElement('div');
     confirmation.className = `confirmation ${type}`;
+    
+    const icon = type === 'success' ? 'check-circle' : 
+                 type === 'warning' ? 'exclamation-triangle' : 
+                 type === 'error' ? 'times-circle' : 'info-circle';
+    
     confirmation.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <i class="fas fa-${icon}"></i>
         <span>${message}</span>
     `;
     
@@ -173,22 +302,168 @@ function showConfirmation(message, type = 'success') {
         confirmation.style.opacity = '0';
         confirmation.style.transform = 'translateY(-20px)';
         setTimeout(() => {
-            confirmation.remove();
+            if (confirmation.parentNode) {
+                confirmation.remove();
+            }
         }, 300);
     }, 3000);
 }
 
-// Usar en cálculos importantes
-function calcularConConfirmacion(seccion, calculoFn) {
-    const resultado = calculoFn();
-    showConfirmation(`${seccion} calculada correctamente`, 'success');
-    return resultado;
+// Función auxiliar para formatear moneda
+function formatCurrency(value) {
+    if (typeof value !== 'number') {
+        value = parseFloat(value) || 0;
+    }
+    return new Intl.NumberFormat('es-CU', {
+        style: 'currency',
+        currency: 'CUP',
+        minimumFractionDigits: 2
+    }).format(value);
 }
 
-// Mejorar cálculos con efectos
-function calcularSeccionA() {
-    return calcularConConfirmacion('Sección A', function() {
-        // Tu código existente de calcularSeccionA aquí
-        // ... (mantén el mismo código)
-    });
+// Modal para comparación de escenarios
+function closeCompareModal() {
+    const modal = document.getElementById('compareModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Cerrar modal al hacer clic fuera
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('compareModal');
+    if (modal && event.target === modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Cerrar modales de ayuda
+    const helpModal = document.querySelector('.help-modal');
+    if (helpModal && event.target === helpModal) {
+        helpModal.remove();
+    }
+});
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar carrusel
+    updateSlide();
+    
+    // Inicializar dashboard
+    initDashboard();
+    
+    // Verificar modo TCP
+    const tcpToggle = document.getElementById('tcpToggle');
+    if (tcpToggle) {
+        tcpToggle.addEventListener('change', function() {
+            if (this.checked) {
+                showConfirmation('Modo TCP activado. Los pagos mensuales son DEFINITIVOS.', 'warning');
+            }
+        });
+    }
+    
+    // Cargar normativas.json para la calculadora
+    if (typeof cargarNormativas === 'function') {
+        cargarNormativas();
+    }
+});
+
+// Función para añadir escenario en comparación
+function addScenario() {
+    const scenarioName = prompt('Nombre del nuevo escenario:');
+    if (!scenarioName) return;
+    
+    // Crear copia de datos actuales
+    const newScenario = JSON.parse(JSON.stringify(window.datosCalculadora || datosCalculadora));
+    
+    // Permitir modificar ingresos
+    const newIncome = prompt('Ingreso mensual para este escenario:', newScenario.ingresosMensuales);
+    if (newIncome !== null) {
+        newScenario.ingresosMensuales = parseFloat(newIncome) || 0;
+    }
+    
+    // Permitir modificar tasas
+    if (confirm('¿Desea modificar las tasas impositivas?')) {
+        newScenario.impuestos.forEach((tax, index) => {
+            const newRate = prompt(`Nueva tasa para ${tax.nombre} (%):`, tax.tasa);
+            if (newRate !== null) {
+                tax.tasa = parseFloat(newRate) || tax.tasa;
+            }
+        });
+    }
+    
+    // Calcular y añadir
+    if (typeof calculateScenario === 'function') {
+        calculateScenario(newScenario);
+    }
+    if (typeof addScenarioToGrid === 'function') {
+        addScenarioToGrid(scenarioName, newScenario);
+    }
+    
+    showConfirmation('Escenario añadido', 'success');
+}
+
+// Función para calcular escenario (si no existe en calculator.js)
+function calculateScenario(scenario) {
+    if (!scenario) return;
+    
+    const income = scenario.ingresosMensuales || 0;
+    
+    // Calcular impuestos activos
+    let totalTax = 0;
+    
+    if (scenario.impuestos && Array.isArray(scenario.impuestos)) {
+        scenario.impuestos.forEach(impuesto => {
+            if (impuesto.activo) {
+                const taxAmount = income * (impuesto.tasa / 100);
+                totalTax += taxAmount;
+            }
+        });
+    }
+    
+    scenario.totalTax = totalTax;
+    scenario.netIncome = income - totalTax;
+    
+    return scenario;
+}
+
+// Función para añadir escenario al grid
+function addScenarioToGrid(name, data) {
+    const compareGrid = document.getElementById('compareGrid');
+    if (!compareGrid) return;
+    
+    const income = data.ingresosMensuales || 0;
+    const totalTax = data.totalTax || 0;
+    const netIncome = data.netIncome || 0;
+    const effectiveRate = income > 0 ? (totalTax / income * 100).toFixed(2) : 0;
+    
+    const scenarioCard = document.createElement('div');
+    scenarioCard.className = 'scenario-card';
+    scenarioCard.innerHTML = `
+        <div class="scenario-header">
+            <h5>${name}</h5>
+            <button class="btn-scenario-delete" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="scenario-content">
+            <div class="scenario-stat">
+                <span>Ingreso Bruto:</span>
+                <strong>${formatCurrency(income)}</strong>
+            </div>
+            <div class="scenario-stat">
+                <span>Total Impuestos:</span>
+                <strong>${formatCurrency(totalTax)}</strong>
+            </div>
+            <div class="scenario-stat">
+                <span>Ingreso Neto:</span>
+                <strong>${formatCurrency(netIncome)}</strong>
+            </div>
+            <div class="scenario-stat">
+                <span>Tasa Efectiva:</span>
+                <strong>${effectiveRate}%</strong>
+            </div>
+        </div>
+    `;
+    
+    compareGrid.appendChild(scenarioCard);
 }
