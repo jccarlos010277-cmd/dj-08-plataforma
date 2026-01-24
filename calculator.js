@@ -383,4 +383,53 @@ function addScenario() {
 
 function calculateScenario(scenario) {
     const income = scenario.ingresosMensuales;
-   
+    // El cálculo se hace en addScenarioToGrid
+}
+
+function closeCompareModal() {
+    document.getElementById('compareModal').style.display = 'none';
+}
+
+function saveCalculatorData() {
+    localStorage.setItem('calculator_data', JSON.stringify(datosCalculadora));
+}
+
+function cargarResultadosGuardados() {
+    const saved = localStorage.getItem('calculator_data');
+    if (saved) {
+        datosCalculadora = JSON.parse(saved);
+        // Actualizar UI con datos guardados
+        document.getElementById('monthlyIncome').value = datosCalculadora.ingresosMensuales;
+        cargarImpuestos();
+    }
+}
+
+// Inicializar cuando se muestre la calculadora
+document.addEventListener('DOMContentLoaded', function() {
+    // Escuchar cambios en la sección
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (document.getElementById('impuesto-mensual').classList.contains('active')) {
+                    if (!taxChart) {
+                        initCalculator();
+                    }
+                }
+            }
+        });
+    });
+    
+    const target = document.getElementById('impuesto-mensual');
+    if (target) {
+        observer.observe(target, { attributes: true });
+    }
+});
+
+// Formatear moneda mejorado
+function formatCurrency(value) {
+    if (isNaN(value)) value = 0;
+    return '$' + value.toLocaleString('es-CU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
