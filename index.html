@@ -435,5 +435,25 @@
     <script src="script.js"></script>
     <script src="chatbot.js"></script>
     <script src="calculator.js"></script>
+    <script>
+    // Verificar carga de scripts
+    window.addEventListener('load', function() {
+        console.log('✅ Todos los scripts cargados');
+        console.log('datosCalculadora:', window.datosCalculadora ? '✓' : '✗');
+        console.log('formatCurrency:', typeof formatCurrency === 'function' ? '✓' : '✗');
+        console.log('initCalculator:', typeof initCalculator === 'function' ? '✓' : '✗');
+        
+        // Verificar normativas después de 2 segundos
+        setTimeout(() => {
+            if (window.datosCalculadora && window.datosCalculadora.escalaProgresiva) {
+                console.log('✅ Escala progresiva cargada:', 
+                    window.datosCalculadora.escalaProgresiva.length, 'tramos');
+            } else {
+                console.log('⚠️ Escala progresiva NO cargada');
+            }
+        }, 2000);
+    });
+</script>
 </body>
 </html>
+
