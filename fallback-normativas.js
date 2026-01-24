@@ -1,0 +1,87 @@
+// fallback-normativas.js
+// Cargador de normativas con fallback
+
+window.normativasFallback = {
+  normativas: {
+    anio: 2025,
+    modo: "TCP",
+    escala_progresiva: [
+      {
+        limite_inferior: 0,
+        limite_superior: 30000,
+        porcentaje: 10,
+        descripcion: "Primer tramo - Hasta 30,000 CUP"
+      },
+      {
+        limite_inferior: 30000.01,
+        limite_superior: 60000,
+        porcentaje: 15,
+        descripcion: "Segundo tramo - De 30,000.01 a 60,000 CUP"
+      },
+      {
+        limite_inferior: 60000.01,
+        limite_superior: 120000,
+        porcentaje: 20,
+        descripcion: "Tercer tramo - De 60,000.01 a 120,000 CUP"
+      },
+      {
+        limite_inferior: 120000.01,
+        limite_superior: 250000,
+        porcentaje: 25,
+        descripcion: "Cuarto tramo - De 120,000.01 a 250,000 CUP"
+      },
+      {
+        limite_inferior: 250000.01,
+        limite_superior: 500000,
+        porcentaje: 35,
+        descripcion: "Quinto tramo - De 250,000.01 a 500,000 CUP"
+      },
+      {
+        limite_inferior: 500000.01,
+        limite_superior: null,
+        porcentaje: 45,
+        descripcion: "Sexto tramo - Exceso de 500,000 CUP"
+      }
+    ],
+    parametros_fiscales: {
+      minimo_exento_anual: 39120,
+      minimo_exento_mensual: 3260,
+      porcentaje_pago_cuenta: 5,
+      impuesto_ventas: 10,
+      impuesto_fuerza_trabajo: 5,
+      seguridad_social: {
+        tasa: 20,
+        base_minima: 2000,
+        base_maxima: 50000
+      },
+      gastos_deducibles: {
+        porcentaje_con_contabilidad: 100,
+        porcentaje_sin_contabilidad: 60,
+        requiere_justificacion: true
+      }
+    },
+    advertencias_tcp: {
+      pagos_a_cuenta: "DEFINITIVOS - SIN DEVOLUCIÓN",
+      excedentes: "Los pagos mensuales/trimestrales son definitivos. La ONAT NO realiza devoluciones.",
+      recomendacion: "Calcular cuidadosamente los anticipos. Conserve toda la documentación de gastos."
+    },
+    reglas_oro: [
+      "1. MÍNIMO EXENTO: 39,120 CUP anuales (3,260 CUP mensual). Utilidad menor = Impuesto 0.",
+      "2. GASTOS DEDUCIBLES: 100% con justificación documental (60% para sectores sin contabilidad).",
+      "3. PAGOS A CUENTA: 5% sobre ingresos brutos (restando mínimo exento mensual). Son DEFINITIVOS."
+    ]
+  }
+};
+
+// Función para cargar normativas con fallback
+function cargarNormativasConFallback() {
+  return fetch('normativas.json')
+    .then(response => {
+      if (!response.ok) throw new Error('Archivo no encontrado');
+      return response.json();
+    })
+    .catch(error => {
+      console.warn('Usando normativas de fallback:', error.message);
+      return window.normativasFallback;
+    });
+}
